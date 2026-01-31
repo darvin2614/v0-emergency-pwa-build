@@ -26,6 +26,7 @@ export function useGeolocation() {
   const [watchId, setWatchId] = useState<number | null>(null)
 
   const handleSuccess = useCallback((position: GeolocationPosition) => {
+    console.log('[v0] Geolocation success:', position.coords.latitude, position.coords.longitude)
     setState(prev => ({
       ...prev,
       latitude: position.coords.latitude,
@@ -49,6 +50,7 @@ export function useGeolocation() {
   }, [])
 
   const handleError = useCallback((error: GeolocationPositionError) => {
+    console.log('[v0] Geolocation error:', error.code, error.message)
     let errorMessage: string
     
     switch (error.code) {
@@ -96,7 +98,10 @@ export function useGeolocation() {
   }, [])
 
   const requestPermission = useCallback(async () => {
+    console.log('[v0] useGeolocation.requestPermission called')
+    
     if (!navigator.geolocation) {
+      console.log('[v0] Geolocation not supported')
       setState(prev => ({
         ...prev,
         error: 'Geolocation not supported',
@@ -105,6 +110,7 @@ export function useGeolocation() {
       return
     }
 
+    console.log('[v0] Geolocation supported, setting loading state')
     setState(prev => ({ ...prev, loading: true }))
 
     // Check permission state
@@ -126,14 +132,17 @@ export function useGeolocation() {
     }
 
     // Get initial position
+    console.log('[v0] Getting current position...')
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError, options)
 
     // Start watching
+    console.log('[v0] Starting position watch...')
     const id = navigator.geolocation.watchPosition(handleSuccess, handleError, {
       ...options,
       maximumAge: 5000,
     })
     
+    console.log('[v0] Watch started with id:', id)
     setWatchId(id)
   }, [handleSuccess, handleError])
 

@@ -8,7 +8,19 @@ export function useServiceWorker() {
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null)
 
   useEffect(() => {
+    // Skip service worker registration in development/preview environments
+    // Service workers require the script to be served with correct MIME type
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+      return
+    }
+
+    // Only register in production with proper hosting
+    const isLocalhost = window.location.hostname === 'localhost'
+    const isVercelPreview = window.location.hostname.includes('vusercontent.net')
+    
+    if (isVercelPreview) {
+      // Skip SW registration in v0 preview - it doesn't support static JS files
+      console.log('[v0] Service worker skipped in preview environment')
       return
     }
 
@@ -34,13 +46,16 @@ export function useServiceWorker() {
           }
         })
         
-        // Check for updates periodically
-        setInterval(() => {
-          reg.update()
-        }, 60000) // Every minute
+        // Check for updates periodically (only in production)
+        if (!isLocalhost) {
+          setInterval(() => {
+            reg.update()
+          }, 60000)
+        }
         
       } catch (error) {
-        console.error('[ServiceWorker] Registration failed:', error)
+        // Silently fail - app works without service worker
+        console.log('[v0] Service worker registration skipped:', error)
       }
     }
 

@@ -88,8 +88,11 @@ export function useCompass() {
   }, [updateSmoothedHeading])
 
   const requestPermission = useCallback(async () => {
+    console.log('[v0] useCompass.requestPermission called')
+    
     // Check if DeviceOrientationEvent is available
     if (typeof DeviceOrientationEvent === 'undefined') {
+      console.log('[v0] DeviceOrientationEvent not available')
       setState(prev => ({
         ...prev,
         error: 'Device orientation not supported',
@@ -98,6 +101,7 @@ export function useCompass() {
       return false
     }
 
+    console.log('[v0] DeviceOrientationEvent available')
     // iOS 13+ requires explicit permission
     if (typeof (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission === 'function') {
       try {
@@ -138,13 +142,17 @@ export function useCompass() {
   }, [])
 
   const startCompass = useCallback(async () => {
+    console.log('[v0] startCompass called')
     const hasPermission = await requestPermission()
+    console.log('[v0] Compass permission result:', hasPermission)
     
     if (hasPermission) {
       // Try absolute orientation first (more accurate)
       if ('ondeviceorientationabsolute' in window) {
+        console.log('[v0] Using deviceorientationabsolute')
         window.addEventListener('deviceorientationabsolute', handleOrientation as EventListener)
       } else {
+        console.log('[v0] Using deviceorientation')
         window.addEventListener('deviceorientation', handleOrientation)
       }
     }

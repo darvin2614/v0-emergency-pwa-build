@@ -37,6 +37,9 @@ export function SafeRouteApp() {
   const [activeTab, setActiveTab] = useState<TabId>('compass')
   const [userId, setUserId] = useState<string>('')
   const [sensorsEnabled, setSensorsEnabled] = useState(false)
+  
+  // Debug: Log state changes
+  console.log('[v0] SafeRouteApp render - sensorsEnabled:', sensorsEnabled, 'activeTab:', activeTab)
   const [compassTarget, setCompassTarget] = useState<CompassTarget | null>(null)
   const [alerts, setAlerts] = useState<DisasterAlert[]>(DISASTER_ALERTS)
   const [selectedFamilyMemberId, setSelectedFamilyMemberId] = useState<string | null>(null)
@@ -101,13 +104,24 @@ export function SafeRouteApp() {
   
   // Request sensor permissions
   const handleRequestPermission = useCallback(async () => {
-    await geo.requestPermission()
-    await compass.startCompass()
-    setSensorsEnabled(true)
+    console.log('[v0] handleRequestPermission called')
+    try {
+      console.log('[v0] Requesting geo permission...')
+      await geo.requestPermission()
+      console.log('[v0] Geo permission done, starting compass...')
+      await compass.startCompass()
+      console.log('[v0] Compass started, enabling sensors')
+      setSensorsEnabled(true)
+    } catch (err) {
+      console.log('[v0] Permission error:', err)
+      // Still enable sensors even if one fails
+      setSensorsEnabled(true)
+    }
   }, [geo, compass])
   
   // Handle safe house selection
   const handleSelectSafeHouse = useCallback((house: typeof safeHouses.safeHouses[0]) => {
+    console.log('[v0] handleSelectSafeHouse called', house.name)
     safeHouses.selectHouse(house)
     setSelectedFamilyMemberId(null)
     setCompassTarget({

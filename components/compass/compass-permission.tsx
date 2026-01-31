@@ -39,7 +39,11 @@ export function CompassPermission({
         )}
         
         <button
-          onClick={onRequestPermission}
+          type="button"
+          onClick={() => {
+            console.log('[v0] Enable button clicked (survival mode)')
+            onRequestPermission()
+          }}
           disabled={isLoading}
           className="w-full py-4 text-xl font-bold bg-yellow-400 text-black rounded active:bg-yellow-300 disabled:opacity-50"
         >
@@ -73,7 +77,11 @@ export function CompassPermission({
         )}
         
         <Button 
-          onClick={onRequestPermission} 
+          type="button"
+          onClick={() => {
+            console.log('[v0] Enable button clicked (resilient mode)')
+            onRequestPermission()
+          }}
           disabled={isLoading}
           className="w-full"
           size="lg"
@@ -131,7 +139,11 @@ export function CompassPermission({
       )}
 
       <Button 
-        onClick={onRequestPermission} 
+        type="button"
+        onClick={() => {
+          console.log('[v0] Enable button clicked (full mode)')
+          onRequestPermission()
+        }}
         disabled={isLoading}
         className="w-full"
         size="lg"
